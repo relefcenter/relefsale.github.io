@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Акции для клиентов</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #030b18;
+      --bg-2: #071226;
+      --card: rgba(9, 20, 38, 0.98);
+      --card-border: rgba(112, 139, 195, 0.18);
+      --card-shadow: 0 22px 50px rgba(0, 0, 0, 0.34);
+      --text: #f3f7ff;
+      --muted: #a8b6d7;
+      --muted-2: #7e8bad;
+      --line: rgba(255, 255, 255, 0.08);
+      --primary: #6677ff;
+      --primary-2: #7a5cff;
+      --green-bg: rgba(0, 183, 122, 0.14);
+      --green-border: rgba(78, 240, 177, 0.34);
+      --green-text: #d7fff0;
+      --pill-bg: rgba(255, 255, 255, 0.03);
+      --pill-border: rgba(142, 164, 214, 0.24);
+      --ended-bg: linear-gradient(180deg, rgba(83, 18, 28, 0.98), rgba(44, 7, 13, 0.99));
+      --ended-border: rgba(255, 91, 116, 0.34);
+      --planned-bg: linear-gradient(180deg, rgba(74, 48, 9, 0.96), rgba(39, 23, 4, 0.98));
+      --planned-border: rgba(255, 193, 96, 0.32);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+      --max: 1120px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(circle at top center, rgba(66, 91, 170, 0.18), transparent 30%),
+        linear-gradient(180deg, #04101f 0%, #010714 100%);
+      color: var(--text);
+    }
+
+    body {
+      padding: 24px 18px 56px;
+    }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      padding-bottom: 18px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 0.96rem;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .field {
+      min-width: 220px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(140, 163, 211, 0.22);
+      background: rgba(8, 18, 35, 0.95);
+      color: var(--text);
+      outline: none;
+      font-size: 0.96rem;
+      transition: .2s ease;
+    }
+
+    .field input::placeholder {
+      color: #7080a6;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(111, 126, 255, 0.58);
+      box-shadow: 0 0 0 4px rgba(103, 120, 255, 0.12);
+    }
+
+    .field select {
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #d7deff 50%),
+        linear-gradient(135deg, #d7deff 50%, transparent 50%);
+      background-position:
+        calc(100% - 20px) 20px,
+        calc(100% - 14px) 20px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 40px;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 0.94rem;
+      margin-bottom: 14px;
+    }
+
+    .cards {
+      display: grid;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .card.status-ended {
+      background: var(--ended-bg);
+      border-color: var(--ended-border);
+    }
+
+    .card.status-planned {
+      background: var(--planned-bg);
+      border-color: var(--planned-border);
+    }
+
+    .card-main {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .media {
+      width: 320px;
+      min-width: 320px;
+      aspect-ratio: 1 / 1;
+      background: rgba(255,255,255,0.03);
+      border-right: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .media img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .content {
+      flex: 1;
+      min-width: 0;
+      padding: 22px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: clamp(1.45rem, 2vw, 2.05rem);
+      line-height: 1.12;
+      font-weight: 800;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      color: var(--green-text);
+      font-size: .85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      color: #edf2ff;
+      font-size: .9rem;
+    }
+
+    .label {
+      color: #9bb0e5;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .conditions,
+    .note {
+      margin: 0;
+      white-space: pre-line;
+      line-height: 1.58;
+    }
+
+    .conditions {
+      font-size: 1.02rem;
+      color: var(--text);
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: auto;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid rgba(125, 147, 198, 0.22);
+      background: rgba(255,255,255,0.03);
+      font-weight: 600;
+      transition: .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(145, 168, 225, 0.42);
+    }
+
+    .btn.primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+      box-shadow: 0 10px 24px rgba(92, 101, 255, 0.24);
+    }
+
+    .btn.primary:hover {
+      box-shadow: 0 14px 28px rgba(92, 101, 255, 0.30);
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 16px;
+      border-top: 1px solid var(--line);
+      font-size: .92rem;
+      color: var(--muted-2);
+    }
+
+    .status-active .status-value { color: #7ee1ad; }
+    .status-planned .status-value { color: #ffd188; }
+    .status-ended .status-value { color: #ff9aa7; }
+
+    .empty {
+      display: none;
+      text-align: center;
+      padding: 34px 18px;
+      color: var(--muted);
+      border: 1px dashed rgba(154, 171, 215, 0.24);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .important {
+      margin-top: 24px;
+      padding: 22px 20px;
+      border-radius: var(--radius-xl);
+      background:
+        linear-gradient(180deg, rgba(18, 29, 55, 0.98), rgba(9, 17, 33, 0.98)),
+        var(--card);
+      border: 1px solid rgba(109, 124, 255, 0.2);
+      box-shadow: var(--card-shadow);
+    }
+
+    .important-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .important-tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      background: rgba(109, 124, 255, 0.14);
+      border: 1px solid rgba(124, 144, 255, 0.35);
+      color: #e7ecff;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-size: .82rem;
+    }
+
+    .important-title {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .important-text {
+      margin: 0;
+      color: var(--muted);
+      white-space: pre-line;
+      line-height: 1.6;
+    }
+
+    .important-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 980px) {
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbar {
+        justify-content: stretch;
+      }
+
+      .field {
+        flex: 1 1 240px;
+      }
+
+      .card-main {
+        flex-direction: column;
+      }
+
+      .media {
+        width: 100%;
+        min-width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px 12px 36px;
+      }
+
+      .summary {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .content {
+        padding: 18px 16px 16px;
+      }
+
+      .card-title {
+        font-size: 1.35rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div>
+        <h1 class="title">Акции для клиентов</h1>
+        <p class="subtitle">Поиск работает по названию, бренду и тексту условий.</p>
+      </div>
+
+      <div class="toolbar">
+        <label class="field">
+          <input id="searchInput" type="search" placeholder="Поиск" />
+        </label>
+        <label class="field">
+          <select id="statusFilter" aria-label="Фильтр по статусу">
+            <option value="all">Все</option>
+            <option value="active">Активные</option>
+            <option value="planned">Запланированные</option>
+            <option value="ended">Завершённые</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <div class="summary">
+      <div id="resultsSummary">Показано 0 акций</div>
+      <div>Статусы: active / planned / ended</div>
+    </div>
+
+    <main class="cards" id="cards"></main>
+    <div class="empty" id="emptyState">По выбранным параметрам ничего не найдено.</div>
+
+    <section class="important" id="importantBlock"></section>
+  </div>
+
+  <script>
+    const promos = [
+      {
+        id: 305,
+        title: "ДЖЭМ приклеился",
+        brand: "Berlingo",
+        period: "2026-03-01 — 2026-04-30",
+        showPeriod: true,
+        conditions: "За покупку клей-карандаша Berlingo от 10 000 рублей клиент получает до 15 000 баллами ДЖЭМ!",
+        note: "",
+        badge: "новая акция!",
+        status: "active",
+        image: "900х900 (2).png",
+        buttons: [
+          { label: "Ассортимент", href: "https://relefopt.ru/search?q=234561%20255114%20305594%20271151%20370578%20370579%20356797%20265915%20265916%20360327%20104282%20104283%20290854%20299792%20296063%20104279%20271152%20281676%20104280%20104281%20104284", primary: true },
+          { label: "Подробнее", href: "https://relefopt.ru/offer/3301" },
+          { label: "Листовка", href: "https://drive.google.com/file/d/12BxSeprOj8TE9BA3jDiffs7o9ypKRqpF/view?usp=drive_link" }
+        ]
+      },
+      {
+        id: 306,
+        title: "Заточено на выгоду!",
+        brand: "Berlingo",
+        period: "2026-03-01 — 2026-04-30",
+        showPeriod: true,
+        conditions: "За покупку акционного ассортимента Berlingo от 15 000 рублей и выполнения условия по приросту (15%) клиент получает до 15 000 баллами ДЖЭМ!",
+        note: "Акционный ассортимент: чернографитные карандаши, ластики и точилки",
+        badge: "новая акция!",
+        status: "active",
+        image: "900х900 (1).jpg",
+        buttons: [
+          { label: "Ассортимент", href: "https://relefopt.ru/catalog/offers/offline/3304", primary: true },
+          { label: "Подробнее", href: "https://relefopt.ru/offers/5490" },
+          { label: "Листовка", href: "https://drive.google.com/file/d/1IiUmU4feNqYdxwhDV_7gWYYp189NedBc/view?usp=drive_link" }
+        ]
+      },
+      {
+        id: 301,
+        title: "Предметный подход!",
+        brand: "BG",
+        period: "2026-02-01 — 2026-03-31",
+        showPeriod: true,
+        conditions: "За покупку предметных тетрадей bg от 15 000 рублей клиент получает до 30 000 баллами ДЖЭМ!",
+        note: "",
+        badge: "",
+        status: "active",
+        image: "900х900_Предметные тетради.jpg",
+        buttons: [
+          { label: "Ассортимент", href: "https://relefopt.ru/catalog/offers/offline/3298", primary: true },
+          { label: "Подробнее", href: "https://relefopt.ru/offer/3298" },
+          { label: "Листовка", href: "https://drive.google.com/file/d/115Awe9e8XgrB2eVQeKcD-GHjtOa2tGXI/view?usp=drive_link" }
+        ]
+      },
+      {
+        id: 302,
+        title: "Пиши каждый день!",
+        brand: "Office space и Art space",
+        period: "2026-02-01 — 2026-03-31",
+        showPeriod: true,
+        conditions: "За покупку ручек Office space и Art space от 5 000 рублей клиент получает до 10 000 баллами ДЖЭМ!",
+        note: "",
+        badge: "",
+        status: "active",
+        image: "900х900_Пиши каждый день.jpg",
+        buttons: [
+          { label: "Ассортимент", href: "https://relefopt.ru/catalog/offers/offline/3300", primary: true },
+          { label: "Подробнее", href: "https://relefopt.ru/offer/3300" },
+          { label: "Листовка", href: "https://drive.google.com/file/d/1pzGiU9Y654JG_rWktf-mTGL8CYqrP67_/view?usp=drive_link" }
+        ]
+      },
+      {
+        id: 303,
+        title: "РАСПРОДАЖА",
+        brand: "",
+        period: "",
+        showPeriod: false,
+        conditions: "Добавили ещё больше товаров — от материалов для творчества до офисных и школьных принадлежностей.\n\nСкидки до 70% и более 9 000 SKU в наличии:",
+        note: "* Сотрудникам отделов продаж начисляется премия 2% от объёма реализации товаров категории «Распродажа» при достижении месячного оборота от 50 000 ₽.",
+        badge: "",
+        status: "active",
+        image: "3f343d34-768e-4bd2-a1da-7dce47e3e1f1.png",
+        buttons: [
+          { label: "Ассортимент", href: "https://relefopt.ru/catalog/mark/sale", primary: true }
+        ]
+      },
+      {
+        id: 304,
+        title: "POS-Материалы",
+        brand: "",
+        period: "",
+        showPeriod: false,
+        conditions: "Мы обновили условия по бонусной отгрузке POS-материалов — и теперь многие позиции можно получить БЕСПЛАТНО 🔥\n\nЧасть ассортимента доступна к отгрузке без доплат при соблюдении новых условий:\n\n— дисплеи и подставки\n— воблеры и стопперы\n— ценникодержатели\n— и другие POS-материалы для оформления точки продаж от топовых брендов – Berlingo, ГАММА, Schneider, Crown, Munhwa, Faber-Castell.",
+        note: "",
+        badge: "",
+        status: "active",
+        image: "9dc1a19d-4f84-4e00-8acb-e8d71fbe7457.png",
+        buttons: [
+          { label: "Ассортимент", href: "https://docs.google.com/spreadsheets/d/1uscb88X58dqJGPV3HfkF4pSk4WPglBXQD4mPMdGs21k/edit?gid=2080668539#gid=2080668539", primary: true }
+        ]
+      }
+    ];
+
+    const important = {
+      text: "Промежуточные и финальные отчеты по новым акциям будут обновлены и выгружены в общую папку до конца недели: \\\\10.50.0.110\\общая папка\\Трейд-маркетинг",
+      buttons: [
+        { label: "POSM", href: "https://docs.google.com/spreadsheets/d/1uscb88X58dqJGPV3HfkF4pSk4WPglBXQD4mPMdGs21k/edit?gid=2080668539#gid=2080668539", primary: true },
+        { label: "Дашборд", href: "http://vsrv-bi-01/reports/browse/Продажи", primary: false }
+      ]
+    };
+
+    const cardsEl = document.getElementById("cards");
+    const importantEl = document.getElementById("importantBlock");
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const resultsSummary = document.getElementById("resultsSummary");
+    const emptyState = document.getElementById("emptyState");
+
+    const normalize = (value) => {
+      return String(value || "")
+        .toLowerCase()
+        .replace(/ё/g, "е")
+        .replace(/\s+/g, " ")
+        .trim();
+    };
+
+    const pluralize = (n) => {
+      const last = n % 10;
+      const lastTwo = n % 100;
+      if (lastTwo >= 11 && lastTwo <= 14) return "акций";
+      if (last === 1) return "акция";
+      if (last >= 2 && last <= 4) return "акции";
+      return "акций";
+    };
+
+    const escapeHtml = (str) => {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    };
+
+    const makeButtons = (buttons) => {
+      return buttons.map((btn) => {
+        const cls = btn.primary ? "btn primary" : "btn";
+        return `<a class="${cls}" href="${escapeHtml(btn.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(btn.label)}</a>`;
+      }).join("");
+    };
+
+    const renderCards = () => {
+      cardsEl.innerHTML = promos.map((item) => {
+        const searchText = normalize([
+          item.id,
+          item.title,
+          item.brand,
+          item.conditions,
+          item.note,
+          item.badge,
+          item.status
+        ].join(" "));
+
+        return `
+          <article
+            class="card status-${escapeHtml(item.status)}"
+            data-status="${escapeHtml(item.status)}"
+            data-search="${escapeHtml(searchText)}"
+          >
+            <div class="card-main">
+              <div class="media">
+                <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.title)}">
+              </div>
+
+              <div class="content">
+                <div class="top">
+                  <h2 class="card-title">${escapeHtml(item.title)}</h2>
+                  ${item.badge ? `<span class="badge">${escapeHtml(item.badge)}</span>` : ""}
+                </div>
+
+                ${(item.showPeriod || item.brand) ? `
+                  <div class="meta">
+                    ${item.showPeriod ? `<span class="pill">Период: ${escapeHtml(item.period)}</span>` : ""}
+                    ${item.brand ? `<span class="pill">Бренд: ${escapeHtml(item.brand)}</span>` : ""}
+                  </div>
+                ` : ""}
+
+                <div class="label">Условия</div>
+                <p class="conditions">${escapeHtml(item.conditions)}</p>
+                ${item.note ? `<p class="note">${escapeHtml(item.note)}</p>` : ""}
+
+                <div class="actions">
+                  ${makeButtons(item.buttons)}
+                </div>
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <span>ID: ${escapeHtml(item.id)}</span>
+              <span class="status-value">${escapeHtml(item.status)}</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    };
+
+    const renderImportant = () => {
+      importantEl.innerHTML = `
+        <div class="important-top">
+          <span class="important-tag">Важно</span>
+          <h2 class="important-title">Отчеты и полезные ссылки</h2>
+        </div>
+        <p class="important-text">${escapeHtml(important.text)}</p>
+        <div class="important-actions">
+          ${important.buttons.map(btn => {
+            const cls = btn.primary ? "btn primary" : "btn";
+            return `<a class="${cls}" href="${escapeHtml(btn.href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(btn.label)}</a>`;
+          }).join("")}
+        </div>
+      `;
+    };
+
+    const applyFilters = () => {
+      const query = normalize(searchInput.value);
+      const status = statusFilter.value;
+      const cards = Array.from(document.querySelectorAll(".card"));
+      let visible = 0;
+
+      cards.forEach((card) => {
+        const matchesQuery = !query || card.dataset.search.includes(query);
+        const matchesStatus = status === "all" || card.dataset.status === status;
+        const show = matchesQuery && matchesStatus;
+        card.style.display = show ? "" : "none";
+        if (show) visible += 1;
+      });
+
+      resultsSummary.textContent = `Показано ${visible} из ${cards.length} ${pluralize(visible)}`;
+      emptyState.style.display = visible ? "none" : "block";
+      cardsEl.style.display = visible ? "grid" : "none";
+    };
+
+    renderCards();
+    renderImportant();
+    searchInput.addEventListener("input", applyFilters);
+    statusFilter.addEventListener("change", applyFilters);
+    applyFilters();
+  </script>
+</body>
+</html>
